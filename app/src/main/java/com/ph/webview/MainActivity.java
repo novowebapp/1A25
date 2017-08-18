@@ -31,7 +31,13 @@ import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 
+import java.io.UnsupportedEncodingException;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+
+import command.sdk.Command;
 import command.sdk.PrinterCommand;
+import zj.com.customize.sdk.Other;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -64,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
     // Name of the connected device
     private String mConnectedDeviceName = null;
     // Local Bluetooth adapter
-    private BluetoothAdapter mBluetoothAdapter = null;
+    public BluetoothAdapter mBluetoothAdapter = null;
     // Member object for the services
     private BluetoothService mService = null;
 
@@ -81,9 +87,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         webView= (WebView) findViewById(R.id.webview);
+
+        webView.addJavascriptInterface(new WebAppInterface(this), "Android");
+
+
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
-		settings.setAppCacheEnabled(false);
+
+        settings.setAppCacheEnabled(false);
         webView.getSettings().setDomStorageEnabled(true);
 
         webView.setWebChromeClient(new WebChromeClient());
@@ -92,6 +103,11 @@ public class MainActivity extends AppCompatActivity {
 
         webView.setScrollbarFadingEnabled(true);
         webView.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
+
+
+        //Checkbluetouch();
+
+
 
         webView.setWebViewClient(new WebViewClient(){
 
@@ -107,11 +123,12 @@ public class MainActivity extends AppCompatActivity {
                 String verifica=method(url);
                 String pagina_impressao="https://1a25.net/bilhetes_print.php?";
                 if (pagina_impressao.equals(verifica)){
-                    createWebPrintJob(view);
+                    //createWebPrintJob(view);
                     //Toast.makeText(getApplicationContext(),verifica,Toast.LENGTH_SHORT).show();
 
                     Intent serverIntent = new Intent(MainActivity.this, DeviceListActivity.class);
                     startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+
 
                 }
                 //Toast.makeText(getApplicationContext(),url,Toast.LENGTH_SHORT).show();
@@ -125,21 +142,39 @@ public class MainActivity extends AppCompatActivity {
 
         webView.loadDataWithBaseURL(null, htmlDocument, "text/HTML", "UTF-8", null);
 
-        webView.loadUrl("https://1a25.net/login.php");
-//###################################################
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+       /* if (mBluetoothAdapter == null) {
+            // Device does not support Bluetooth
+        } else {
+            if (mBluetoothAdapter.isEnabled()) {
+                // Bluetooth is not enable :)
+
+            }
+        }*/
+
 
         mService = new BluetoothService(this, mHandler);
-
 
         mService.start();
 
 
-        Intent serverIntent = new Intent(MainActivity.this, DeviceListActivity.class);
-        startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
 
+        webView.loadUrl("https://1a25.net/login.php");
 
+    }
 
+    private void Checkbluetouch() {
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            // Device does not support Bluetooth
+        } else {
+            if (!mBluetoothAdapter.isEnabled()) {
+                // Bluetooth is not enable :)
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);            }
+
+        }
     }
 
 
@@ -191,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
                     if (BluetoothAdapter.checkBluetoothAddress(address)) {
                         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
                         // Attempt to connect to the device
-Toast.makeText(this,"conectado",Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(this,"conectado",Toast.LENGTH_SHORT).show();
                         mService.connect(device);
 
                     }
@@ -211,7 +246,8 @@ Toast.makeText(this,"conectado",Toast.LENGTH_SHORT).show();
                         Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
                     switch (msg.arg1) {
                         case BluetoothService.STATE_CONNECTED:
-                            Print_Test();//
+                            //Print_Test();//
+                            print_table();
 
                             break;
                         case BluetoothService.STATE_CONNECTING:
@@ -293,6 +329,62 @@ Toast.makeText(this,"conectado",Toast.LENGTH_SHORT).show();
             SendDataByte(PrinterCommand.POS_Print_Text(data, THAI, 255, 0, 0, 0));
             SendDataByte(PrinterCommand.POS_Set_Cut(1));
             SendDataByte(PrinterCommand.POS_Set_PrtInit());
+        }
+    }
+
+    private void print_table(){
+        SimpleDateFormat formatter = new SimpleDateFormat ("yyyy/MM/dd/ HH:mm:ss ");
+        Date curDate = new Date(System.currentTimeMillis());//获取当前时间
+        String str = formatter.format(curDate);
+        String date = str + "\n\n\n\n\n\n";
+
+            Command.ESC_Align[2] = 0x02;
+            byte[][] allbuf;
+            try {
+                allbuf = new byte[][]{
+//15//8//
+                        Command.ESC_Init, Command.ESC_Three,
+                        String.format("AGENTE:-2s0000000001\n").getBytes("GBK"),
+                        String.format("DATA:-5s20/07/2017 11:50\n").getBytes("GBK"),
+                        String.format("CONCURSO-7sPALPITE-5sVALOR\n").getBytes("GBK"),
+                        String.format("14:20-2sGoias-LK-2s05-2s50,00┃\n").getBytes("GBK"),
+                        String.format("14:20-2sGoias-LK-2s05-2s50,00┃\n").getBytes("GBK"),
+                        String.format("14:20-2sGoias-LK-2s05-2s50,00┃\n").getBytes("GBK"),
+                        Command.ESC_Align, "\n".getBytes("GBK")
+                };
+                        /*String.format("┣━━╋━━━╋━━╋━━━━┫\n").getBytes("GBK"),
+                        String.format("┃XXXX┃%2d/%-3d┃XXXX┃%-8d┃\n",1,222,555).getBytes("GBK"),
+                        String.format("┣━━┻┳━━┻━━┻━━━━┫\n").getBytes("GBK"),
+                        String.format("┃XXXXXX┃%-18s┃\n","【XX】XXXX/XXXXXX").getBytes("GBK"),
+                        String.format("┣━━━╋━━┳━━┳━━━━┫\n").getBytes("GBK"),
+                        String.format("┃XXXXXX┃%-2s┃XXXX┃%-8s┃\n","XXXX","XXXX").getBytes("GBK"),
+                        String.format("┗━━━┻━━┻━━┻━━━━┛\n").getBytes("GBK"),*/
+
+                byte[] buf = Other.byteArraysToBytes(allbuf);
+                SendDataByte(buf);
+                SendDataString(date);
+                SendDataByte(Command.GS_V_m_n);
+            } catch (UnsupportedEncodingException e) {
+                // TODO 自动生成的 catch 块
+                e.printStackTrace();
+            }
+
+    }
+
+    private void SendDataString(String data) {
+
+        if (mService.getState() != BluetoothService.STATE_CONNECTED) {
+            Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT)
+                    .show();
+            return;
+        }
+        if (data.length() > 0) {
+            try {
+                mService.write(data.getBytes("GBK"));
+            } catch (UnsupportedEncodingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 
