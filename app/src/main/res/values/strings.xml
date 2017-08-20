@@ -16,11 +16,6 @@
     <string name="chosecommand">Please select instruction</string>
     <string name="btnClose">Close</string>
     <string name="contentdescription"></string>
-    <string name="btn_prttable">Print Form</string>
-    <string name="Smallticketprinting">Small Ticket Printing</string>
-    <string name="btn_prtcode">Print 1D/2D Codebar</string>
-    <string name="btn_scqr">Generate QR Code Print</string>
-    <string name="btn_dyca">Turn on the camera</string>
     <string name="input">Please enter a print!</string>
     <string name="choose_printcoding"></string>
     <string name="big5">BIG5</string>
@@ -29,11 +24,11 @@
     <string name="gbk12">Simplified</string>
 
     <!--  DeviceListActivity -->
-    <string name="scanning">Scanning Device&#8230;</string>
-    <string name="select_device">Select the connected device</string>
-    <string name="none_paired">No matching devices</string>
-    <string name="none_found">No device found</string>
-    <string name="title_paired_devices">Match equipment</string>
+    <string name="scanning">Buscar dispositivos</string>
+    <string name="select_device">Selecione um aparelho</string>
+    <string name="none_paired">Equipamentos nao pareados</string>
+    <string name="none_found">Nenhum aparelho encontrado</string>
+    <string name="title_paired_devices">Dispositivos encontrados</string>
     <string name="title_other_devices">Other useful equipment</string>
     <string name="button_scan">Scanning device</string>
 

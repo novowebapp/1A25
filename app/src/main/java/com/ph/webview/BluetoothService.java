@@ -103,6 +103,8 @@ public class BluetoothService {
      * @param device  The BluetoothDevice to connect
      */
     public synchronized void connect(BluetoothDevice device) {
+
+        MainActivity.aparelho_conectado= String.valueOf(device);
         if (DEBUG) Log.d(TAG, "connect to: " + device);
 
         // Cancel any thread attempting to make a connection
