@@ -154,13 +154,8 @@ public class MainActivity extends Activity {
                     //createWebPrintJob(view);
                     //Toast.makeText(getApplicationContext(),verifica,Toast.LENGTH_SHORT).show();
 
-                    if (aparelho_conectado.equals("0F:02:17:51:12:AD")){
                         Print_BMP();
 
-                    } else {
-                        Print_BMP2();
-
-                    }
                 }
                 //Toast.makeText(getApplicationContext(),url,Toast.LENGTH_SHORT).show();
                 //createWebPrintJob(view);
@@ -184,14 +179,6 @@ public class MainActivity extends Activity {
 
     }
 
-    private void Print_BMP2() {
-        Bundle data = new Bundle();
-        //data.putParcelable(Global.OBJECT1, mBitmap);
-        data.putParcelable(Global.PARCE1, decodedByte);
-        data.putInt(Global.INTPARA1, nPaperWidth);
-        data.putInt(Global.INTPARA2, 0);
-        WorkService.workThread.handleCmd(Global.CMD_POS_PRINTBWPICTURE, data);
-    }
 
     private void Checkbluetouch() {
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();

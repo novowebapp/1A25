@@ -28,9 +28,9 @@
     <string name="select_device">Selecione um aparelho</string>
     <string name="none_paired">Equipamentos nao pareados</string>
     <string name="none_found">Nenhum aparelho encontrado</string>
-    <string name="title_paired_devices">Dispositivos encontrados</string>
-    <string name="title_other_devices">Other useful equipment</string>
-    <string name="button_scan">Scanning device</string>
+    <string name="title_paired_devices">Dispositivos recentes</string>
+    <string name="title_other_devices">Dispositivos encontrados</string>
+    <string name="button_scan">Buscar dispositivos</string>
 
     <!--  Message -->
     <string name="msg_state">Input Error!</string>
