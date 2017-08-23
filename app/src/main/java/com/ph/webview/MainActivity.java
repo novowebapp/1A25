@@ -7,38 +7,22 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
-import android.print.PrintJob;
 import android.print.PrintManager;
-import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
 import android.widget.Toast;
-
-import command.sdk.Command;
-import command.sdk.Global;
-import command.sdk.PrintPicture;
-import command.sdk.PrinterCommand;
-import command.sdk.WorkService;
 
 
 public class MainActivity extends Activity {
@@ -74,20 +58,18 @@ public class MainActivity extends Activity {
     // Local Bluetooth adapter
     public BluetoothAdapter mBluetoothAdapter = null;
     // Member object for the services
-    private BluetoothService mService = null;
+    public static BluetoothService mService = null;
 
     private static final String CHINESE = "GBK";
     private static final String THAI = "CP874";
     private static final String KOREAN = "EUC-KR";
     private static final String BIG5 = "BIG5";
 
-    public static Bitmap decodedByte = null;
-
-    public int nPaperWidth = 384;
 
 
 
-    WebView webView;
+
+    public static WebView webView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,25 +125,7 @@ public class MainActivity extends Activity {
                 return false;
             }
 
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public void onPageFinished(WebView view, String url)
-            {
-                //Toast.makeText(getApplicationContext(), "Connected to " + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
-                String verifica=method(url);
-                String pagina_impressao="https://1a25.net/bilhetes_print.php?";
-                if (pagina_impressao.equals(verifica)) {
-                    //createWebPrintJob(view);
-                    //Toast.makeText(getApplicationContext(),verifica,Toast.LENGTH_SHORT).show();
 
-                        Print_BMP();
-
-                }
-                //Toast.makeText(getApplicationContext(),url,Toast.LENGTH_SHORT).show();
-                //createWebPrintJob(view);
-
-
-            }
         });
 
 
@@ -209,8 +173,8 @@ public class MainActivity extends Activity {
 
 
     public String method(String str) {
-        str = str.substring(0, str.length() - 5);
-        return str;
+        String mainChapterNumber = str.split("\\?", 2)[0];
+        return mainChapterNumber;
     }
 
     @Override
@@ -320,41 +284,6 @@ public class MainActivity extends Activity {
     };
 
 
-    private void Print_BMP(){
-
-        //	byte[] buffer = PrinterCommand.POS_Set_PrtInit();
-        int nMode = 0;
-        if(decodedByte != null)
-        {
-            /**
-             * Parameters:
-             * mBitmap  要打印的图片
-             * nWidth   打印宽度（58和80）
-             * nMode    打印模式
-             * Returns: byte[]
-             */
-            byte[] data = PrintPicture.POS_PrintBMP(decodedByte, nPaperWidth, nMode);
-            //	SendDataByte(buffer);
-            SendDataByte(Command.ESC_Init);
-            SendDataByte(Command.LF);
-            SendDataByte(data);
-            SendDataByte(PrinterCommand.POS_Set_PrtAndFeedPaper(30));
-            SendDataByte(PrinterCommand.POS_Set_Cut(1));
-            SendDataByte(PrinterCommand.POS_Set_PrtInit());
-        }
-    }
-
-
-
-    private void SendDataByte(byte[] data) {
-
-        if (mService.getState() != BluetoothService.STATE_CONNECTED) {
-            Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT)
-                    .show();
-            return;
-        }
-        mService.write(data);
-    }
     @Override
     public void onDestroy() {
         super.onDestroy();

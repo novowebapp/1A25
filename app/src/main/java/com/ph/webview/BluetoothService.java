@@ -1,10 +1,5 @@
 package com.ph.webview;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.UUID;
-
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
@@ -14,7 +9,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.UUID;
 
 /**
  * This class does all the work for setting up and managing Bluetooth
@@ -188,7 +187,7 @@ public class BluetoothService {
         // Send a failure message back to the Activity
         Message msg = mHandler.obtainMessage(MainActivity.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
-        bundle.putString(MainActivity.TOAST, "Unable to connect device");
+        bundle.putString(MainActivity.TOAST, "Não foi possivel conectar ao dispositivo");
         msg.setData(bundle);
         mHandler.sendMessage(msg);
     }
@@ -202,7 +201,7 @@ public class BluetoothService {
         // Send a failure message back to the Activity
         Message msg = mHandler.obtainMessage(MainActivity.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
-        bundle.putString(MainActivity.TOAST, "Device connection was lost");
+        bundle.putString(MainActivity.TOAST, "Conexao com o dispositivo perdida");
         msg.setData(bundle);
         mHandler.sendMessage(msg);
     }
